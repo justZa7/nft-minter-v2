@@ -1,31 +1,76 @@
 import { NextResponse } from "next/server";
+import axios from "axios";
+import FormData from "form-data";
+
+const JWT = process.env.PINATA_JWT;
 
 export async function POST(req) {
-    const formData = await req.formData();
-    const file = formData.get("file");
+  try {
+    const form = await req.formData();
 
-    if(!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    const file = form.get("file");
+    const name = form.get("name");
+    const description = form.get("description");
 
-    const JWT = process.env.PINATA_JWT;
-
-    const pinataForm = new FormData();
-    pinataForm.append("file", file);
-    pinataForm.append("pinataMetadata", JSON.stringify({ name: file.name || "nft-image" }));
-    pinataForm.append("pinataOptions", JSON.stringify({ cidVersion: 1 }));
-
-    const res = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${JWT}`,
-        },
-        body: pinataForm,
-    });
-
-    if (!res.ok) {
-        const err = await res.json();
-        return NextResponse.json({ error: err }, { status: 500 });
+    if (!file || !name || !description) {
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
 
-    const data = await res.json();
-    return NextResponse.json({ cid: data.IpfsHash });
+    // Convert file to stream
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const formData = new FormData();
+    formData.append("file", buffer, file.name);
+
+    formData.append(
+      "pinataMetadata",
+      JSON.stringify({
+        name: name,
+      })
+    );
+
+    formData.append(
+      "pinataOptions",
+      JSON.stringify({
+        cidVersion: 0,
+      })
+    );
+
+    formData.append(
+      "pinataContent",
+      JSON.stringify({
+        name: name,
+        description: description,
+        image: "ipfs://" 
+      })
+    );
+
+    const uploadRes = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+      headers: {
+        Authorization: `Bearer ${JWT}`,
+        ...formData.getHeaders(),
+      },
+    });
+
+    const imageCID = uploadRes.data.IpfsHash;
+
+    const metadata = {
+      name,
+      description,
+      image: `ipfs://${imageCID}`,
+    };
+
+    const metadataRes = await axios.post("https://api.pinata.cloud/pinning/pinJSONToIPFS", metadata, {
+      headers: {
+        Authorization: `Bearer ${JWT}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    return NextResponse.json({
+      uri: `ipfs://${metadataRes.data.IpfsHash}`,
+    });
+  } catch (error) {
+    console.error("Upload Error:", error.response?.data || error.message);
+    return NextResponse.json({ error: "Failed to upload to Pinata" }, { status: 500 });
+  }
 }

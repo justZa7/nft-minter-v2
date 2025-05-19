@@ -9,10 +9,7 @@ export async function fetchUserNFTs(userAddress) {
   const provider = new ethers.BrowserProvider(window.ethereum);
   const contract = new ethers.Contract(CONTRACT_ADDRESS, MyNFT.abi, provider);
 
-  // Kita akan scanning tokenId dari 1 sampai token terakhir di contract
-  // untuk cek kepemilikan user
-  // (Note: ini sederhana, kalau banyak token, perlu indexing service seperti TheGraph)
-  const totalSupply = await contract._tokenIds?.() || 100; // fallback 100 token cek
+  const totalSupply = await contract._tokenIds?.() || 100; 
   let nfts = [];
 
   for (let tokenId = 1; tokenId <= totalSupply; tokenId++) {
@@ -23,7 +20,7 @@ export async function fetchUserNFTs(userAddress) {
         nfts.push({ tokenId, tokenURI });
       }
     } catch (e) {
-      // tokenId tidak ada/invalid skip
+      
     }
   }
 
