@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { fetchUserNFTs } from "@/lib/getUserNfts";
+import Image from "next/image";
 
 export default function MyNFTPage() {
   const [nfts, setNfts] = useState([]);
@@ -76,7 +77,7 @@ export default function MyNFTPage() {
             >
               {image && (
                 <div className="aspect-square overflow-hidden">
-                  <img 
+                  <Image 
                     src={image} 
                     alt={name} 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
