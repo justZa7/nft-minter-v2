@@ -38,7 +38,7 @@ export default function Minter () {
             
             const contract = new ethers.Contract(CONTRACT_ADDRESS, MyNFT.abi, signer);
             const tx = await contract.mint(await signer.getAddress(), data.uri, {
-                value: ethers.parseUnits("0.1"),
+                value: ethers.parseEther("0.1"),
                 maxFeePerGas: feeData.maxFeePerGas,
                 maxPriorityFeePerGas: feeData.maxPriorityFeePerGas,
             });
