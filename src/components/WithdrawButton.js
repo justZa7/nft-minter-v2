@@ -57,7 +57,7 @@ export default function WithdrawButton({ isOwner, walletAddress, balance, setBal
                 <div className="flex justify-between items-center bg-gray-700 p-4 rounded-lg">
                     <span className="text-gray-300">Available Balance:</span>
                     <span className="text-xl font-mono text-white">
-                        {balance !== null ? `${balance} ETH` : (
+                        {balance !== null ? `${balance} AVAX` : (
                             <span className="inline-block h-6 w-20 bg-gray-600 rounded animate-pulse"></span>
                         )}
                     </span>

@@ -7,7 +7,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MyNFT is ERC721, ERC721URIStorage, Ownable {
     uint256 private _tokenIds;
-    uint256 public mintPrice = 0.001 ether;
+    uint256 public mintPrice = 0.1 ether;
 
     constructor(address initialOwner) ERC721("MyNFT", "MyNFT") Ownable(msg.sender) {}
 

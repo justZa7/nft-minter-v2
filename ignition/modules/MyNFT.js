@@ -3,7 +3,7 @@
 
 const { buildModule } = require("@nomicfoundation/hardhat-ignition/modules");
 
-module.exports = buildModule("MyNFT", (m) => {
+module.exports = buildModule("MyNFTV1", (m) => {
   const owner = m.getAccount(0);
 
   const myNFT = m.contract("MyNFT", [owner]);
