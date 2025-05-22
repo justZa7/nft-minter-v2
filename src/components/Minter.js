@@ -36,8 +36,6 @@ export default function Minter () {
             const signer = await provider.getSigner();
             const feeData = await provider.getFeeData();
 
-            const gasPrice = feeData.gasPrice ?? ethers.parseUnits("30", "gwei");
-            
             const contract = new ethers.Contract(CONTRACT_ADDRESS, MyNFT.abi, signer);
             const tx = await contract.mint(await signer.getAddress(), data.uri, {
                 value: ethers.parseEther("0.1"),
